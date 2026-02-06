@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打地鼠 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 游戏专用样式 */
+        .game-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 20px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .info-label {
+            font-size: 1rem;
+            color: #888;
+        }
+
+        .info-value {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 2.5rem;
+            color: #FF8B5A;
+        }
+
+        .game-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mole-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 30px;
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.4);
+        }
+
+        .mole-hole {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(ellipse at center, #3E2723 0%, #1a0f0a 100%);
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .mole-hole::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0 0 50% 50%;
+        }
+
+        .mole {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #D2691E, #8B4513);
+            border-radius: 35px 35px 20px 20px;
+            transition: bottom 0.15s ease-out;
+        }
+
+        .mole::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 15px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 28px 0 0 white;
+        }
+
+        .mole::after {
+            content: '🐹';
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+        }
+
+        .mole-hole.active .mole {
+            bottom: 10px;
+        }
+
+        .mole-hole.hit {
+            animation: hitEffect 0.2s ease-out;
+        }
+
+        @keyframes hitEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .game-controls {
+            text-align: center;
+        }
+
+        .start-game-btn {
+            padding: 20px 60px;
+            background: linear-gradient(135deg, #FF8B5A, #FF6B35);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .start-game-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 139, 90, 0.5);
+        }
+
+        .start-game-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 游戏结束画面 */
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-over.show {
+            display: flex;
+        }
+
+        .game-over-content {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+        }
+
+        .game-over-content h2 {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 2.5rem;
+            color: #FF8B5A;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .final-score span {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 3rem;
+            color: #FF8B5A;
+        }
+
+        .encouragement {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .play-again-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #FF8B5A, #FF6B35);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-btn-small {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: #f0f0f0;
+            color: #888;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .play-again-btn:hover, .back-btn-small:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="games.html" class="back-btn">← 小遊戲區</a>
+            <h1 class="title">
+                <span class="title-icon">🔨</span>
+                打地鼠
+                <span class="title-icon">🐹</span>
+            </h1>
+        </header>
+
+        <main class="content">
+            <!-- 游戏资讯 -->
+            <section class="game-info">
+                <div class="info-item">
+                    <span class="info-label">⏰ 剩餘時間</span>
+                    <span id="timer" class="info-value">60</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🎯 分數</span>
+                    <span id="score" class="info-value">0</span>
+                </div>
+            </section>
+
+            <!-- 游戏区域 -->
+            <section class="game-area">
+                <div class="mole-board">
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                    <div class="mole-hole"></div>
+                </div>
+            </section>
+
+            <!-- 开始按钮 -->
+            <section class="game-controls">
+                <button id="startBtn" class="start-game-btn">🎮 開始遊戲</button>
+            </section>
+
+            <!-- 游戏结束画面 -->
+            <div id="gameOver" class="game-over">
+                <div class="game-over-content">
+                    <h2>🎉 遊戲結束！</h2>
+                    <p class="final-score">你的分數：<span id="finalScore">0</span> 分</p>
+                    <p class="encouragement" id="encouragement"></p>
+                    <button class="play-again-btn">🔄 再玩一次</button>
+                    <button class="back-btn-small" onclick="location.href='games.html'">🏠 回遊戲區</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>加油！打最多的地鼠！🔨</p>
+        </footer>
+    </div>
+
+    <script>
+        // 打地鼠游戏变量
+        let gameTimer = null;
+        let score = 0;
+        let timeLeft = 60;
+        let isPlaying = false;
+
+        // DOM 元素
+        const timerEl = document.getElementById('timer');
+        const scoreEl = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+        const gameOverEl = document.getElementById('gameOver');
+        const finalScoreEl = document.getElementById('finalScore');
+        const encouragementEl = document.getElementById('encouragement');
+        const playAgainBtn = document.querySelector('.play-again-btn');
+
+        // 绑定事件
+        startBtn.addEventListener('click', startGame);
+        playAgainBtn.addEventListener('click', startGame);
+
+        // 绑定地鼠洞点击
+        document.querySelectorAll('.mole-hole').forEach(hole => {
+            hole.addEventListener('click', function() {
+                whackMole(this);
+            });
+        });
+
+        // 开始游戏
+        function startGame() {
+            if (isPlaying) return;
+
+            // 重置游戏
+            score = 0;
+            timeLeft = 60;
+            isPlaying = true;
+
+            // 更新显示
+            timerEl.textContent = timeLeft;
+            scoreEl.textContent = score;
+            gameOverEl.classList.remove('show');
+            startBtn.disabled = true;
+            startBtn.textContent = '🎮 遊戲進行中...';
+
+            // 清除旧的地鼠
+            document.querySelectorAll('.mole').forEach(m => m.remove());
+            document.querySelectorAll('.mole-hole').forEach(h => {
+                h.classList.remove('active', 'hit');
+            });
+
+            // 开始计时
+            gameTimer = setInterval(function() {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            // 开始出现地鼠
+            showMole();
+        }
+
+        // 显示地鼠
+        function showMole() {
+            if (!isPlaying) return;
+
+            const holes = document.querySelectorAll('.mole-hole');
+            const randomHole = holes[Math.floor(Math.random() * holes.length)];
+
+            // 确保这个洞没有地鼠
+            if (randomHole.classList.contains('active')) {
+                showMole();
+                return;
+            }
+
+            // 添加地鼠
+            const mole = document.createElement('div');
+            mole.className = 'mole';
+            randomHole.appendChild(mole);
+            randomHole.classList.add('active');
+
+            // 小朋友适合的速度：800ms-1200ms
+            const stayTime = Math.random() * 400 + 800;
+
+            setTimeout(function() {
+                if (randomHole.classList.contains('active')) {
+                    randomHole.classList.remove('active');
+                    randomHole.removeChild(mole);
+                }
+
+                // 继续出现地鼠
+                if (isPlaying) {
+                    showMole();
+                }
+            }, stayTime);
+        }
+
+        // 打地鼠
+        function whackMole(hole) {
+            if (!isPlaying) return;
+
+            if (hole.classList.contains('active') && !hole.classList.contains('hit')) {
+                hole.classList.add('hit');
+                score++;
+                scoreEl.textContent = score;
+
+                // 被打到后马上缩回去
+                setTimeout(function() {
+                    hole.classList.remove('active', 'hit');
+                    const mole = hole.querySelector('.mole');
+                    if (mole) mole.remove();
+                }, 150);
+            }
+        }
+
+        // 结束游戏
+        function endGame() {
+            isPlaying = false;
+            clearInterval(gameTimer);
+
+            startBtn.disabled = false;
+            startBtn.textContent = '🎮 再玩一次';
+
+            // 显示结束画面
+            finalScoreEl.textContent = score;
+
+            // 鼓励讯息
+            let msg = '';
+            if (score >= 30) msg = '🌟 太厲害了！你是打地鼠高手！';
+            else if (score >= 20) msg = '👏 表現很棒！繼續加油！';
+            else if (score >= 10) msg = '😊 不錯喔！多練習會更好！';
+            else msg = '💪 再接再厲！下一次會更好！';
+
+            encouragementEl.textContent = msg;
+            gameOverEl.classList.add('show');
+        }
+    </script>
+</body>
+</html>

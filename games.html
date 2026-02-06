@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小遊戲區 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 首頁</a>
+            <h1 class="title">
+                <span class="title-icon">🎮</span>
+                小遊戲區
+                <span class="title-icon">⭐</span>
+            </h1>
+        </header>
+
+        <main class="content">
+            <!-- 遊戲選擇 -->
+            <section class="game-menu">
+                <div class="game-card active" onclick="location.href='mole-game.html'">
+                    <div class="game-icon">🔨</div>
+                    <h2>打地鼠</h2>
+                    <p>打打打！看誰反應最快！</p>
+                    <span class="play-hint">🎯 點擊開始遊戲</span>
+                </div>
+
+                <div class="game-card active" onclick="location.href='angry-birds.html'">
+                    <div class="game-icon">🐦</div>
+                    <h2>憤怒小鳥</h2>
+                    <p>拉弓射擊，打敗小豬！</p>
+                    <span class="play-hint">🎮 新遊戲！</span>
+                </div>
+
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🚧</div>
+                    <h2>更多遊戲</h2>
+                    <p>敬請期待...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>玩得開心！🎉</p>
+        </footer>
+    </div>
+</body>
+</html>

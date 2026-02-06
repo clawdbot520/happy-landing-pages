@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>規矩 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 首頁</a>
+            <h1 class="title">
+                <span class="title-icon">📋</span>
+                規矩
+                <span class="title-icon">⭐</span>
+            </h1>
+            <!-- 管理員登入區 -->
+            <div id="adminSection" class="admin-section" style="display: none;">
+                <span id="adminName"></span>
+                <button class="logout-btn" onclick="logout()">🚪 登出</button>
+            </div>
+        </header>
+
+        <!-- 載入中 -->
+        <div id="loading" class="loading">載入中...</div>
+
+        <main class="content" id="rulesContent" style="display: none;">
+            <!-- 規矩列表 -->
+            <section class="rules-section">
+                <div id="rulesDisplay" class="rules-display">
+                    <!-- JavaScript 會自動生成 -->
+                </div>
+            </section>
+
+            <!-- 管理員編輯區 -->
+            <section id="adminEditSection" class="rules-edit-section" style="display: none;">
+                <h3>🔧 管理員編輯區</h3>
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label>📝 新增規矩</label>
+                        <textarea id="newRuleText" class="input-field" rows="3" placeholder="輸入新的規矩..."></textarea>
+                    </div>
+                    <button class="add-rule-btn" onclick="addRule()">➕ 新增規矩</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>要當乖寶寶喔！😊</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 初始化規矩頁面
+        initRulesPage();
+    </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小朋友的開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <!-- 右上角用戶區域 -->
+            <div class="header-user">
+                <div id="loggedOut" class="logged-out">
+                    <a href="login.html" class="header-login-btn">👤 登入</a>
+                </div>
+                <div id="loggedIn" class="logged-in" style="display: none;">
+                    <span id="headerUserName"></span>
+                    <button class="header-logout-btn" onclick="logout()">🚪 登出</button>
+                </div>
+            </div>
+
+            <h1 class="title">
+                <span class="title-icon">🏠</span>
+                歡迎來到開心小天地
+                <span class="title-icon">🌟</span>
+            </h1>
+            <p class="subtitle" id="welcomeText">這裡是小朋友的快樂天堂！</p>
+        </header>
+
+        <nav class="menu" id="mainMenu">
+            <a href="rules.html" class="menu-card rules-card">
+                <div class="card-icon">📋</div>
+                <h2 class="card-title">規矩</h2>
+                <p class="card-desc">小小規則要遵守</p>
+                <div class="card-decoration"></div>
+            </a>
+
+            <a href="ledger.html" class="menu-card ledger-card">
+                <div class="card-icon">💰</div>
+                <h2 class="card-title">記帳本</h2>
+                <p class="card-desc">管理我的零用錢</p>
+                <div class="card-decoration"></div>
+            </a>
+
+            <a href="performance.html" class="menu-card performance-card">
+                <div class="card-icon">📊</div>
+                <h2 class="card-title">本週表現</h2>
+                <p class="card-desc">記錄每天的好表現</p>
+                <div class="card-decoration"></div>
+            </a>
+
+            <a href="games.html" class="menu-card games-card">
+                <div class="card-icon">🎮</div>
+                <h2 class="card-title">小遊戲區</h2>
+                <p class="card-desc">好玩的小遊戲</p>
+                <div class="card-decoration"></div>
+            </a>
+        </nav>
+
+        <footer class="footer">
+            <p>✨ 記得每天都要開開心心喔！✨</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 檢查登入狀態
+        checkLoginStatus();
+    </script>
+</body>
+</html>

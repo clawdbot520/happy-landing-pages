@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本週表現 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 首頁</a>
+            <h1 class="title">
+                <span class="title-icon">📊</span>
+                本週表現
+                <span class="title-icon">⭐</span>
+            </h1>
+            <!-- 管理員登入區 -->
+            <div id="adminSection" class="admin-section" style="display: none;">
+                <span id="adminName"></span>
+                <button class="logout-btn" onclick="logout()">🚪 登出</button>
+            </div>
+        </header>
+
+        <!-- 一般訊息 -->
+        <div id="publicMessage" class="public-message">
+            <p>👀 大家都可以看到本週表現喔！</p>
+            <p id="editPrompt" style="display: none;">🔐 只有管理員可以編輯勾選</p>
+        </div>
+
+        <!-- 載入中 -->
+        <div id="loading" class="loading">載入中...</div>
+
+        <!-- 顯示的內容 -->
+        <main class="content" id="performanceContent" style="display: none;">
+            <!-- 週次選擇 -->
+            <section class="week-selector">
+                <button class="week-nav-btn" onclick="changeWeek(-1)">◀ 上週</button>
+                <h2 id="weekTitle">2026年 2月 第1週</h2>
+                <button class="week-nav-btn" onclick="changeWeek(1)">下週 ▶</button>
+            </section>
+
+            <!-- 兩個小朋友的表現表格 -->
+            <section class="performance-tables">
+                <!-- Evelyn 表格 -->
+                <div class="kid-table">
+                    <div class="kid-header evelyn">
+                        <h3>👧 Evelyn</h3>
+                    </div>
+                    <table class="performance-table">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>🏫 上學</th>
+                                <th>🛁 盥洗</th>
+                                <th>📚 學習</th>
+                                <th>😴 睡覺</th>
+                                <th>⭐</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evelynBody">
+                            <!-- JavaScript 會自動生成 -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td>📈 總計</td>
+                                <td id="evelynSchool">-</td>
+                                <td id="evelynCare">-</td>
+                                <td id="evelynStudy">-</td>
+                                <td id="evelynSleep">-</td>
+                                <td id="evelynTotal">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Howie 表格 -->
+                <div class="kid-table">
+                    <div class="kid-header howie">
+                        <h3>👦 Howie</h3>
+                    </div>
+                    <table class="performance-table">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>🏫 上學</th>
+                                <th>🛁 盥洗</th>
+                                <th>📚 學習</th>
+                                <th>😴 睡覺</th>
+                                <th>⭐</th>
+                            </tr>
+                        </thead>
+                        <tbody id="howieBody">
+                            <!-- JavaScript 會自動生成 -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td>📈 總計</td>
+                                <td id="howieSchool">-</td>
+                                <td id="howieCare">-</td>
+                                <td id="howieStudy">-</td>
+                                <td id="howieSleep">-</td>
+                                <td id="howieTotal">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 成就區 -->
+            <section class="achievements">
+                <h2>🏆 本週成就</h2>
+                <div id="achievementsContainer" class="achievements-container">
+                    <!-- JavaScript 會自動生成 -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>每天做好這些事，你就是最棒的！🌟</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 檢查登入狀態
+        checkLoginForPerformance();
+    </script>
+</body>
+</html>

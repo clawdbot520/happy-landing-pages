@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 首頁</a>
+            <h1 class="title">
+                <span class="title-icon">👤</span>
+                登入 / 註冊
+                <span class="title-icon">🔐</span>
+            </h1>
+        </header>
+
+        <main class="content">
+            <!-- 登入表單 -->
+            <section class="auth-section" id="loginSection">
+                <div class="auth-box">
+                    <h2>🚪 登入</h2>
+                    <div class="form-group">
+                        <label>👤 帳號</label>
+                        <input type="text" id="loginUsername" class="input-field" placeholder="輸入你的帳號">
+                    </div>
+                    <div class="form-group">
+                        <label>🔑 密碼</label>
+                        <input type="password" id="loginPassword" class="input-field" placeholder="輸入你的密碼">
+                    </div>
+                    <button class="auth-btn login-auth-btn">✨ 登入</button>
+                    <p class="auth-switch">
+                        還沒有帳號？
+                        <a href="#" onclick="showRegister()">按這裡註冊 📝</a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 註冊表單 -->
+            <section class="auth-section" id="registerSection" style="display: none;">
+                <div class="auth-box">
+                    <h2>📝 註冊新帳號</h2>
+                    <div class="form-group">
+                        <label>👤 想要叫什麼名字？</label>
+                        <input type="text" id="regUsername" class="input-field" placeholder="取一個好聽的暱稱">
+                    </div>
+                    <div class="form-group">
+                        <label>🔑 密碼</label>
+                        <input type="password" id="regPassword" class="input-field" placeholder="設定一個密碼">
+                    </div>
+                    <div class="form-group">
+                        <label>🔑 再次輸入密碼</label>
+                        <input type="password" id="regPasswordConfirm" class="input-field" placeholder="再輸入一次確認">
+                    </div>
+                    <button class="auth-btn register-auth-btn" onclick="register()">✨ 完成註冊</button>
+                    <p class="auth-switch">
+                        已經有帳號了？
+                        <a href="#" onclick="showLogin()">按這裡登入 🚪</a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 錯誤/成功訊息 -->
+            <div id="authMessage" class="auth-message" style="display: none;"></div>
+        </main>
+
+        <footer class="footer">
+            <p>歡迎加入開心小天地！🌟</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 如果已經登入，直接跳轉到首頁
+        if (getCurrentUser()) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

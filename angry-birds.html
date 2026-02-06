@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>憤怒小鳥 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .angry-game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+
+        .game-info-item {
+            padding: 10px 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .game-info-item span:first-child {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .game-info-item span:last-child {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 1.8rem;
+            color: #FF6B35;
+        }
+
+        .game-canvas {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: crosshair;
+        }
+
+        .game-controls {
+            margin-top: 20px;
+        }
+
+        .restart-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #FF6B35, #FF8B5A);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 15px;
+            color: #666;
+        }
+
+        .instructions h4 {
+            margin-bottom: 10px;
+            color: #FF6B35;
+        }
+
+        .bird-hint {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #FF6B35, #FF8B5A);
+            color: white;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            animation: bounceHint 2s ease-in-out infinite;
+        }
+
+        @keyframes bounceHint {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="games.html" class="back-btn">← 小遊戲區</a>
+            <h1 class="title">
+                <span class="title-icon">🐦</span>
+                憤怒小鳥
+                <span class="title-icon">🐷</span>
+            </h1>
+        </header>
+
+        <main class="content">
+            <div class="angry-game-container">
+                <!-- 遊戲資訊 -->
+                <div class="game-info">
+                    <div class="game-info-item">
+                        <span>🎯 分數</span>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="game-info-item">
+                        <span>🐷 剩下</span>
+                        <span id="pigs-left">3</span>
+                    </div>
+                </div>
+
+                <!-- 遊戲畫布 -->
+                <canvas id="gameCanvas" class="game-canvas" width="900" height="500"></canvas>
+
+                <!-- 小鳥提示 -->
+                <div id="bird-hint" class="bird-hint">
+                    🐦 小鳥在左邊！拖住往後拉～⬅️
+                </div>
+
+                <!-- 控制按鈕 -->
+                <div class="game-controls">
+                    <button class="restart-btn" onclick="restartGame()">🔄 重新開始</button>
+                </div>
+
+                <!-- 說明 -->
+                <div class="instructions">
+                    <h4>🎮 遊戲說明</h4>
+                    <p>拖住小鳥往後拉，瞄準後放開把小豬打下來！</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>打敗所有小豬！🐷💥</p>
+        </footer>
+    </div>
+
+    <script>
+        // 遊戲變數
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let score = 0;
+        let isDragging = false;
+        let gameWon = false;
+        let birdReleased = false;
+
+        // 彈弓位置
+        const slingshot = {
+            x: 120,
+            y: 380,
+            width: 20,
+            height: 100
+        };
+
+        // 小鳥
+        let bird = {
+            x: slingshot.x,
+            y: slingshot.y,
+            radius: 25,
+            vx: 0,
+            vy: 0,
+            gravity: 0.4,
+            elasticity: 0.6,
+            isFlying: false,
+            inSlingshot: true,
+            startX: slingshot.x,
+            startY: slingshot.y
+        };
+
+        // 小豬陣列
+        let pigs = [];
+        let structures = [];
+
+        // 初始化遊戲
+        function initGame() {
+            score = 0;
+            gameWon = false;
+            birdReleased = false;
+            bird = {
+                x: slingshot.x,
+                y: slingshot.y,
+                radius: 25,
+                vx: 0,
+                vy: 0,
+                gravity: 0.4,
+                elasticity: 0.6,
+                isFlying: false,
+                inSlingshot: true,
+                startX: slingshot.x,
+                startY: slingshot.y
+            };
+
+            // 創建小豬
+            pigs = [
+                { x: 700, y: 400, radius: 30, alive: true, vx: 0, vy: 0 },
+                { x: 780, y: 350, radius: 25, alive: true, vx: 0, vy: 0 },
+                { x: 730, y: 280, radius: 22, alive: true, vx: 0, vy: 0 }
+            ];
+
+            // 創建建築結構（木塊）
+            structures = [
+                { x: 650, y: 420, width: 20, height: 80, type: 'wood', hp: 3 },
+                { x: 750, y: 420, width: 20, height: 80, type: 'wood', hp: 3 },
+                { x: 700, y: 350, width: 120, height: 15, type: 'wood', hp: 3 },
+                { x: 760, y: 300, width: 15, height: 60, type: 'wood', hp: 2 }
+            ];
+
+            updateUI();
+        }
+
+        // 更新 UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            const pigsLeft = pigs.filter(p => p.alive).length;
+            document.getElementById('pigs-left').textContent = pigsLeft;
+
+            if (pigsLeft === 0 && !gameWon) {
+                gameWon = true;
+                setTimeout(() => {
+                    alert('🎉 恭喜過關！\n\n得分：' + score + '\n\n' + getEncouragement(score));
+                }, 500);
+            }
+        }
+
+        function getEncouragement(score) {
+            if (score >= 300) return '🌟 太厲害了！你是憤怒小鳥高手！';
+            if (score >= 200) return '👏 表現很棒！繼續加油！';
+            if (score >= 100) return '😊 不錯喔！多練習會更好！';
+            return '💪 再接再厲！下一次會更好！';
+        }
+
+        // 畫圖
+        function draw() {
+            // 天空漸變
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#E0F7FA');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 畫雲朵
+            drawCloud(100, 80, 60);
+            drawCloud(300, 50, 45);
+            drawCloud(600, 90, 55);
+            drawCloud(800, 60, 40);
+
+            // 畫草地
+            ctx.fillStyle = '#90EE90';
+            ctx.fillRect(0, 450, canvas.width, 50);
+            ctx.fillStyle = '#7CCD7C';
+            ctx.fillRect(0, 455, canvas.width, 5);
+
+            // 畫小鳥（在彈弓前面）
+            drawBird();
+
+            // 畫彈弓
+            drawSlingshot();
+
+            // 畫建築結構
+            structures.forEach(s => drawStructure(s));
+
+            // 畫小豬
+            pigs.forEach(p => {
+                if (p.alive) drawPig(p);
+            });
+
+            // 畫拖曳線（如果在拖曳）
+            if (isDragging && bird.inSlingshot) {
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(slingshot.x, slingshot.y);
+                ctx.lineTo(bird.x, bird.y);
+                ctx.stroke();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function drawCloud(x, y, size) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.8, y - size * 0.2, size * 0.7, 0, Math.PI * 2);
+            ctx.arc(x + size * 1.4, y, size * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawSlingshot() {
+            // Y形彈弓
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+
+            // 主幹
+            ctx.beginPath();
+            ctx.moveTo(slingshot.x, slingshot.y + 50);
+            ctx.lineTo(slingshot.x, slingshot.y - 20);
+            ctx.stroke();
+
+            // 左叉
+            ctx.beginPath();
+            ctx.moveTo(slingshot.x, slingshot.y - 20);
+            ctx.lineTo(slingshot.x - 25, slingshot.y - 50);
+            ctx.stroke();
+
+            // 右叉
+            ctx.beginPath();
+            ctx.moveTo(slingshot.x, slingshot.y - 20);
+            ctx.lineTo(slingshot.x + 25, slingshot.y - 50);
+            ctx.stroke();
+        }
+
+        function drawBird() {
+            ctx.save();
+
+            // 身體
+            ctx.fillStyle = '#FF6B35';
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 肚子
+            ctx.fillStyle = '#FFE4B5';
+            ctx.beginPath();
+            ctx.arc(bird.x + 5, bird.y + 5, bird.radius * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 眼睛
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(bird.x + 8, bird.y - 8, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(bird.x + 12, bird.y - 8, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 眉毛（憤怒表情）
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(bird.x - 2, bird.y - 18);
+            ctx.lineTo(bird.x + 15, bird.y - 12);
+            ctx.stroke();
+
+            // 嘴巴
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.moveTo(bird.x + 20, bird.y);
+            ctx.lineTo(bird.x + 35, bird.y + 5);
+            ctx.lineTo(bird.x + 20, bird.y + 8);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawPig(pig) {
+            ctx.save();
+
+            // 身體
+            ctx.fillStyle = '#90EE90';
+            ctx.beginPath();
+            ctx.arc(pig.x, pig.y, pig.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 鼻子
+            ctx.fillStyle = '#7CCD7C';
+            ctx.beginPath();
+            ctx.ellipse(pig.x, pig.y + 5, pig.radius * 0.5, pig.radius * 0.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 鼻孔
+            ctx.fillStyle = '#5CB85C';
+            ctx.beginPath();
+            ctx.arc(pig.x - 6, pig.y + 5, 4, 0, Math.PI * 2);
+            ctx.arc(pig.x + 6, pig.y + 5, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 眼睛
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(pig.x - 10, pig.y - 10, 8, 0, Math.PI * 2);
+            ctx.arc(pig.x + 10, pig.y - 10, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(pig.x - 8, pig.y - 10, 4, 0, Math.PI * 2);
+            ctx.arc(pig.x + 12, pig.y - 10, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 耳朵
+            ctx.fillStyle = '#90EE90';
+            ctx.beginPath();
+            ctx.ellipse(pig.x - 20, pig.y - 20, 8, 12, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(pig.x + 20, pig.y - 20, 8, 12, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawStructure(s) {
+            ctx.save();
+
+            if (s.type === 'wood') {
+                const alpha = 0.3 + (s.hp / 3) * 0.7;
+                ctx.fillStyle = `rgba(139, 69, 19, ${alpha})`;
+            }
+
+            ctx.fillRect(s.x, s.y, s.width, s.height);
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(s.x, s.y, s.width, s.height);
+
+            ctx.restore();
+        }
+
+        // 物理更新
+        function update() {
+            if (bird.isFlying) {
+                // 重力
+                bird.vy += bird.gravity;
+                bird.x += bird.vx;
+                bird.y += bird.vy;
+
+                // 邊界碰撞
+                if (bird.x < bird.radius || bird.x > canvas.width - bird.radius) {
+                    bird.vx *= -0.5;
+                    bird.x = Math.max(bird.radius, Math.min(canvas.width - bird.radius, bird.x));
+                }
+                if (bird.y > canvas.height - 50) {
+                    bird.vy *= -0.5;
+                    bird.y = canvas.height - 55;
+                    bird.vx *= 0.8;
+
+                    // 停止
+                    if (Math.abs(bird.vx) < 0.5 && Math.abs(bird.vy) < 0.5) {
+                        bird.isFlying = false;
+                        setTimeout(() => {
+                            if (!gameWon) resetBird();
+                        }, 1000);
+                    }
+                }
+            }
+
+            // 小豬物理
+            pigs.forEach(pig => {
+                if (pig.alive) {
+                    pig.vy += 0.5;
+                    pig.x += pig.vx;
+                    pig.y += pig.vy;
+                    pig.vx *= 0.95;
+
+                    // 地面碰撞
+                    if (pig.y > 450 - pig.radius) {
+                        pig.y = 450 - pig.radius;
+                        pig.vy *= -0.3;
+                        pig.vx *= 0.8;
+                    }
+
+                    // 結構碰撞
+                    structures.forEach(s => {
+                        if (pig.x + pig.radius > s.x && pig.x - pig.radius < s.x + s.width &&
+                            pig.y + pig.radius > s.y && pig.y - pig.radius < s.y + s.height) {
+                            // 簡單的碰撞響應
+                            pig.vx *= -0.5;
+                            pig.vy *= -0.3;
+                        }
+                    });
+
+                    // 檢查被鳥打到
+                    if (bird.isFlying) {
+                        const dx = bird.x - pig.x;
+                        const dy = bird.y - pig.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < bird.radius + pig.radius + 10) {
+                            pig.alive = false;
+                            bird.vx *= 0.5;
+                            bird.vy *= 0.3;
+                            score += 100;
+                            updateUI();
+
+                            // 小豬飛出去
+                            pig.vx = bird.vx * 0.8;
+                            pig.vy = bird.vy * 0.8 - 5;
+                        }
+                    }
+                } else {
+                    // 死亡的小豬飛行
+                    pig.vy += 0.5;
+                    pig.x += pig.vx;
+                    pig.y += pig.vy;
+                }
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        // 滑鼠事件
+        canvas.addEventListener('mousedown', (e) => {
+            if (bird.inSlingshot) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const dx = x - bird.x;
+                const dy = y - bird.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < bird.radius + 20) {
+                    isDragging = true;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging && bird.inSlingshot) {
+                const rect = canvas.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
+
+                // 限制拖曳範圍
+                const maxDrag = 100;
+                const dx = x - slingshot.x;
+                const dy = y - slingshot.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > maxDrag) {
+                    x = slingshot.x + dx * maxDrag / dist;
+                    y = slingshot.y + dy * maxDrag / dist;
+                }
+
+                // 只允許往後拉（左後方）
+                if (x > slingshot.x + 20) {
+                    x = slingshot.x + 20;
+                }
+
+                bird.x = x;
+                bird.y = y;
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (isDragging && bird.inSlingshot) {
+                isDragging = false;
+
+                // 計算發射速度
+                const dx = slingshot.x - bird.x;
+                const dy = slingshot.y - bird.y;
+
+                // 最小發射速度
+                if (dx > 10 || Math.abs(dy) > 10) {
+                    bird.vx = dx * 0.15;
+                    bird.vy = dy * 0.15;
+                    bird.isFlying = true;
+                    bird.inSlingshot = false;
+                    birdReleased = true;
+                } else {
+                    // 重置位置
+                    bird.x = slingshot.x;
+                    bird.y = slingshot.y;
+                }
+            }
+        });
+
+        // 觸控支援
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            canvas.dispatchEvent(new MouseEvent('mouseup'));
+        });
+
+        function resetBird() {
+            if (!gameWon) {
+                bird.x = slingshot.x;
+                bird.y = slingshot.y;
+                bird.vx = 0;
+                bird.vy = 0;
+                bird.isFlying = false;
+                bird.inSlingshot = true;
+                birdReleased = false;
+            }
+        }
+
+        function restartGame() {
+            initGame();
+        }
+
+        // 啟動遊戲
+        initGame();
+        draw();
+        update();
+    </script>
+</body>
+</html>

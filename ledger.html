@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>記帳本 - 開心小天地 ✨</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← 首頁</a>
+            <h1 class="title">
+                <span class="title-icon">💰</span>
+                我的記帳本
+                <span class="title-icon">🪙</span>
+            </h1>
+            <div id="userInfo" class="user-info" style="display: none;">
+                <span id="userName"></span>
+                <button class="logout-btn" onclick="logout()">🚪 登出</button>
+            </div>
+        </header>
+
+        <!-- 未登入提示 -->
+        <div id="notLoggedIn" class="login-prompt" style="display: none;">
+            <div class="login-box">
+                <p>🔐 這是「你的」記帳本，別人看不到喔！</p>
+                <p>請先登入～</p>
+                <a href="login.html" class="login-btn">👤 登入 / 註冊</a>
+            </div>
+        </div>
+
+        <!-- 已登入時顯示的內容 -->
+        <main class="content" id="ledgerContent" style="display: none;">
+            <!-- 加入新紀錄 -->
+            <section class="add-record">
+                <h2>➕ 加入新紀錄</h2>
+                <div class="form-group">
+                    <label>📅 日期</label>
+                    <input type="date" id="date" class="input-field">
+                </div>
+                <div class="form-group">
+                    <label>💵 金額</label>
+                    <input type="number" id="amount" class="input-field" placeholder="多少錢？" min="0">
+                </div>
+                <div class="form-group">
+                    <label>類型</label>
+                    <div class="type-buttons">
+                        <button class="type-btn income-btn active" data-type="income">💰 收入</button>
+                        <button class="type-btn expense-btn" data-type="expense">💸 支出</button>
+                    </div>
+                </div>
+                <button class="add-btn" id="addBtn">✨ 加入記錄</button>
+            </section>
+
+            <!-- 總餘額 -->
+            <section class="balance-section">
+                <div class="balance-card">
+                    <span class="balance-label">💎 <span id="userDisplayName"></span> 的總共存了多少？</span>
+                    <span class="balance-amount" id="totalBalance">$0</span>
+                </div>
+            </section>
+
+            <!-- 記錄列表 -->
+            <section class="records-list">
+                <h2>📒 <span id="userDisplayName2"></span> 的記錄</h2>
+                <div id="recordsContainer" class="records-container">
+                    <p class="empty-message">還沒有記錄喔！加一筆吧～ 🎈</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>好好管理零用錢，你是最棒的！🌟</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 檢查登入狀態
+        checkLoginForLedger();
+    </script>
+</body>
+</html>
